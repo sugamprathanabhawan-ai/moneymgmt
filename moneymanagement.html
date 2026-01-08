@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugam Church - Financial Entry</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-maroon: #800000;
+            --accent-gold: #b8860b;
+            --soft-bg: #fdfbf7;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdfbf7 0%, #f5f0e6 100%);
+        }
+        h1, h2, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .maroon-glow:focus {
+            box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.1);
+            border-color: var(--primary-maroon);
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-lg fade-in">
+        <!-- Logo/Header Area -->
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-sm mb-4 border border-slate-100">
+                <svg class="w-8 h-8 text-[var(--primary-maroon)]" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M11 2h2v7h7v2h-7v11h-2v-11h-7v-2h7v-7z"/>
+                </svg>
+            </div>
+            <h1 class="text-4xl font-bold text-slate-900 tracking-tight">Sugam Church</h1>
+            <p class="text-[var(--primary-maroon)] font-medium uppercase tracking-[0.2em] text-xs mt-2">Financial Management Portal</p>
+            <div class="w-12 h-0.5 bg-[var(--accent-gold)] mx-auto mt-4"></div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <div id="alert-container" class="hidden px-8 pt-6"></div>
+
+            <form id="entry-form" class="p-10 space-y-8">
+                <!-- Date Field -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">English Date</label>
+                    <div class="relative">
+                        <input 
+                            type="date" 
+                            id="date-input" 
+                            readonly 
+                            class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-500 cursor-not-allowed outline-none font-medium"
+                        >
+                        <span class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Type of Money -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Type of Money</label>
+                    <input 
+                        type="text" 
+                        id="type-input" 
+                        required 
+                        placeholder="Jawan Bheti,Dasangsa,Bheti"
+                        class="w-full px-5 py-4 border border-slate-200 rounded-2xl outline-none transition-all maroon-glow placeholder:text-slate-300 font-medium"
+                    >
+                </div>
+
+                <!-- Amount -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Amount (NPR)</label>
+                    <div class="relative">
+                        <span class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-lg">Rs. </span>
+                        <input 
+                            type="number" 
+                            id="amount-input" 
+                            required 
+                            step="0.01" 
+                            min="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-10 pr-5 py-4 border border-slate-200 rounded-2xl outline-none transition-all maroon-glow font-semibold text-xl"
+                        >
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button 
+                        type="submit" 
+                        id="submit-btn"
+                        class="w-full bg-[var(--primary-maroon)] hover:bg-[#600000] text-white font-bold py-5 rounded-2xl shadow-xl shadow-maroon-900/10 transition-all flex items-center justify-center gap-3 active:scale-[0.99]"
+                    >
+                        <span id="btn-text" class="tracking-wide">SUBMIT ENTRY</span>
+                        <div id="btn-loader" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-12 space-y-2">
+            <p class="text-slate-400 text-xs font-medium tracking-widest uppercase">Sugam Church Youth Administration</p>
+            <p class="text-slate-300 text-[10px]">&copy; 2026 All Rights Reserved</p>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        // REPLACE THIS URL with your deployed Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby17-ikPwh2eubRYYVLdpvrkstwIffvKXGSuyYWUl0bMfTZI4oexz2TATXedEJDYHcr/exec';
+
+        const form = document.getElementById('entry-form');
+        const dateInput = document.getElementById('date-input');
+        const typeInput = document.getElementById('type-input');
+        const amountInput = document.getElementById('amount-input');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const alertContainer = document.getElementById('alert-container');
+
+        // Initialize Date
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+
+        function showAlert(message, type = 'success') {
+            alertContainer.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-red-50', 'text-red-700', 'fade-in');
+            void alertContainer.offsetWidth; // Trigger reflow
+            alertContainer.classList.add('fade-in', type === 'success' ? 'bg-emerald-50' : 'bg-red-50', type === 'success' ? 'text-emerald-700' : 'text-red-700', 'rounded-2xl', 'mb-2');
+            alertContainer.innerHTML = `
+                <div class="flex items-center gap-3 p-4 font-semibold text-sm">
+                    ${type === 'success' ? 
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : 
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'} 
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => alertContainer.classList.add('hidden'), 6000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = parseFloat(amountInput.value);
+            if (isNaN(amount) || amount <= 0) {
+                showAlert('Please enter a valid amount', 'error');
+                return;
+            }
+
+            // UI Loading State
+            submitBtn.disabled = true;
+            btnText.textContent = 'PROCESSING...';
+            btnLoader.classList.remove('hidden');
+
+            const payload = {
+                action: 'submit',
+                date: dateInput.value,
+                type: typeInput.value,
+                amount: amount,
+                enteredBy: 'Staff Member', 
+                timestamp: new Date().toLocaleString()
+            };
+
+            try {
+                // Using no-cors as it's the most reliable for simple GAS posts from browser
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // Since no-cors doesn't allow reading the response, assume success
+                showAlert(`Successfully recorded $${amount.toFixed(2)} for ${typeInput.value}`);
+                
+                // Reset Form
+                typeInput.value = '';
+                amountInput.value = '';
+                
+            } catch (err) {
+                console.error(err);
+                showAlert('Connection error. Please check your internet.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.textContent = 'SUBMIT ENTRY';
+                btnLoader.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
